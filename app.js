@@ -12,8 +12,15 @@ app.get('/', (req, res) => {
 app.get('/flights', async (req, res) => {
   try {
     const { data } = await axios.get('https://opensky-network.org/api/states/all');
-    const flightsToDublin = data.states.filter(flight => flight[2] === 'EIDW');
-    res.json(flightsToDublin);
+    const filteredFlights = data.states.filter(flight => {
+      // Latitude and longitude of the flight
+      const [,, , , lat, long] = flight;
+      
+      // Define bounding box for Europe, UK, and Atlantic
+      return lat >= 25 && lat <= 70 && long >= -30 && long <= 50;
+    });
+    
+    res.json(filteredFlights);
   } catch (error) {
     res.status(500).send('Error fetching data');
   }

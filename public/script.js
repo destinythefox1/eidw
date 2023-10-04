@@ -21,10 +21,22 @@ async function updateFlights() {
     const flights = await res.json();
     flights.forEach(flight => {
       const [icao24, callsign, origin, timestamp, lat, long, altitude] = flight;
+      let opacity = 1;
+
+      // If the flight is not heading for Dublin, set opacity to 0.5
+      if (origin !== 'EIDW') {
+        opacity = 0.5;
+      }
+
       const marker = new google.maps.Marker({
         position: {lat, lng: long},
         map,
-        icon: '/img/plane.png'  // Use your own airplane icon
+        icon: {
+          url: '/img/plane.png',
+          scaledSize: new google.maps.Size(32, 32), // Size of the icon
+          anchor: new google.maps.Point(16, 16), // Anchor point of the icon
+        },
+        opacity: opacity
       });
 
       markers.push(marker);
@@ -33,4 +45,6 @@ async function updateFlights() {
     console.error('Could not fetch flight data', error);
   }
 }
+
+
 
